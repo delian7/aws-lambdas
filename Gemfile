@@ -4,6 +4,9 @@ source "https://rubygems.org"
 
 gem "dotenv"
 gem "rubocop-rails-omakase", require: false
+gem "notion-ruby-client"
+gem "httparty"
+gem "byebug"
 
 group :development do
   gem "rubocop-rspec"
@@ -14,6 +17,5 @@ group :test do
 end
 
 group :development, :test do
-  gem "byebug"
   gem "rspec"
 end
