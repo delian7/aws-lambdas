@@ -1,6 +1,6 @@
-# Ruby Lambda Template
+# AWS Lambdas
 
-This repository serves as a template for building AWS Lambda functions using Ruby. Customize it as needed to handle HTTP requests or other tasks in a serverless environment.
+Stores all of the lambdas used in different branches in the repository.
 
 ## Prerequisites
 
