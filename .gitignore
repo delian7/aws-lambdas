@@ -3,3 +3,4 @@ notion-lambda-app.zip
 .byebug_history
 vendor/bundle
 lambda_function.zip
+token.yaml
