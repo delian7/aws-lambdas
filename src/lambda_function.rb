@@ -15,7 +15,9 @@ def lambda_handler(event:, context:) # rubocop:disable Lint/UnusedMethodArgument
 
   case http_method
   when 'POST'
-    send_response("hello")
+    send_response(NotionClient.new.coffee_shops)
+  when 'PATCH'
+    send_response(NotionClient.new.restaurants)
   else
     method_not_allowed_response
   end
