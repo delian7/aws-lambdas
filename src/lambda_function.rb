@@ -46,7 +46,11 @@ def redirect_to_google_auth_url
     "client_id=#{ENV['GOOGLE_CLIENT_ID']}&" \
     "redirect_uri=https://api.delianpetrov.com/oauth/callback&" \
     "response_type=code&" \
-    "scope=#{URI.encode_www_form_component('https://www.googleapis.com/auth/calendar.app.created https://www.googleapis.com/auth/calendar.calendars.readonly openid email profile')}&" \
+    "scope=#{URI.encode_www_form_component('
+      https://www.googleapis.com/auth/calendar.app.created
+      https://www.googleapis.com/auth/calendar.calendars.readonly
+      https://www.googleapis.com/auth/spreadsheets
+      openid email profile')}&" \
     "access_type=offline&" \
     "prompt=consent"
   {
