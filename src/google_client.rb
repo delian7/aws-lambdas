@@ -9,12 +9,10 @@ class GoogleClient
 
   def initialize
     @service = Google::Apis::SheetsV4::SheetsService.new
-    # scope = Google::Auth::Scope::SPREADSHEETS
-
-    credentials_path = File.expand_path('../credentials.json', __dir__)
+    credentials_json = ENV['GOOGLE_TOKEN_JSON']
 
     @service.authorization = Google::Auth::ServiceAccountCredentials.make_creds(
-      json_key_io: File.open(credentials_path),
+      json_key_io: StringIO.new(credentials_json),
       scope: Google::Apis::SheetsV4::AUTH_SPREADSHEETS
     )
   end
