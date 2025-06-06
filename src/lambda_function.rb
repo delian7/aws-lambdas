@@ -20,8 +20,10 @@ def lambda_handler(event:, context:) # rubocop:disable Lint/UnusedMethodArgument
   when 'POST'
     send_response(notion_client.coffee_shops)
   when 'PATCH'
-    recommendations = notion_client.restaurants
-    google_formatted_recommendations = google_client.recommendations_to_google_format(recommendations)
+    existing_recommendations = google_client.get_names_of_all_rows
+
+    new_recommendations = notion_client.get_new_recommendations(existing_recommendations)
+    google_formatted_recommendations = google_client.recommendations_to_google_format(new_recommendations)
     send_response(google_client.append_rows(google_formatted_recommendations))
   else
     method_not_allowed_response

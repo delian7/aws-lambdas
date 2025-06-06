@@ -16,14 +16,31 @@ class NotionClient
     raise NotionError, "Failed to initialize Notion client: #{e.message}"
   end
 
+  def get_new_recommendations(existing_recommendations)
+    recommendations = coffee_shops + restaurants
+
+    recommendations.select! do |recommendation|
+      !existing_recommendations.include?(recommendation[:name])
+    end
+
+    recommendations
+  end
+
   def coffee_shops
     response = @client.database_query(
-      database_id: ENV['NOTION_COFFEE_DATABASE']
+      database_id: ENV['NOTION_COFFEE_DATABASE'],
+      filter: {
+        property: 'Synced to Google',
+        checkbox: {
+          equals: false
+        }
+      }
     )
 
     response.results.map do |result|
       address = result.properties.dig('Address', 'rich_text', 0, 'plain_text')
       maps_url = result.properties.dig('Maps Link', 'url')
+      created_by_id = result.properties.dig('Created by', 'created_by', 'id')
 
       if address.nil? && !maps_url.nil? && maps_url.include?('maps.apple.com')
         address = maps_url.split('address=')[1].split('&')[0]
@@ -34,6 +51,7 @@ class NotionClient
         name: result.properties['Name']['title'][0]['plain_text'],
         notes: result.properties.dig('Notes', 'rich_text', 0, 'plain_text'),
         maps_url: maps_url,
+        created_by: created_by_id == '17eb3923-e326-493f-8b8a-b529a323c973' ? 'Lawrence Bot' : 'Delian Bot',
         address: address,
         type: 'Coffee Shop',
         experience: 'Tried It Already',
@@ -50,7 +68,13 @@ class NotionClient
 
   def restaurants
     response = @client.database_query(
-      database_id: ENV['NOTION_RESTAURANT_DATABASE']
+      database_id: ENV['NOTION_RESTAURANT_DATABASE'],
+      filter: {
+        property: 'Synced to Google',
+        checkbox: {
+          equals: false
+        }
+      }
     )
 
     response.results.map do |result|
@@ -62,16 +86,24 @@ class NotionClient
         address = address.gsub('%20', ' ')
       end
 
+      tags = result.properties.dig('Tags', 'multi_select')&.map { |tag| tag['name'] }
+      created_by_id = result.properties.dig('Created by', 'created_by', 'id')
+
+      tags_without_experience = tags - ['Need to Go']
+      notes = result.properties.dig('Notes', 'rich_text', 0, 'plain_text')
+
       {
         name: result.properties.dig('Name', 'title', 0, 'plain_text'),
-        notes: result.properties.dig('Notes', 'rich_text', 0, 'plain_text'),
+        notes: "#{tags_without_experience.join(', ')} #{!notes.nil? ? '. ' : ''}#{notes}",
         maps_url: maps_url,
         type: 'Restaurant',
         address: address,
+        created_by: created_by_id == '17eb3923-e326-493f-8b8a-b529a323c973' ? 'Lawrence Bot' : 'Delian Bot',
+        experience: tags.include?('Need to Go') ? 'Never Been There' : 'Tried It Already',
         price_range: result.properties.dig('$$$', 'select', 'name'),
         dogs_allowed: result.properties.dig('Buddy Friendly 🐶', 'checkbox'),
         rating: result.properties.dig('Our Rating', 'number'),
-        tags: result.properties.dig('Tags', 'multi_select').map { |tag| tag['name'] }
+        tags: tags
       }
     end
   end

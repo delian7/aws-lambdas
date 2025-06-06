@@ -18,6 +18,10 @@ class GoogleClient
     )
   end
 
+  def get_names_of_all_rows
+    @service.get_spreadsheet_values(SEATTLE_SPREADSHEET_ID, "#{SEATTLE_SHEET_NAME}!A1:A10000").values.flatten
+  end
+
   def recommendations_to_google_format(recommendations)
     recommendations.map do |recommendation|
       [
@@ -26,7 +30,7 @@ class GoogleClient
         recommendation[:experience],
         nil,
         recommendation[:notes],
-        'Delian Bot',
+        recommendation[:created_by],
         recommendation[:address]
       ]
     end
