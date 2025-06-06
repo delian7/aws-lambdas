@@ -9,6 +9,6 @@ Check out the API Docs at [https://delianpetrov.com/docs](https://documenter.get
 ## Deploy
 
 ```sh
-zip -r lambda_function.zip src Gemfile Gemfile.lock vendor && aws lambda update-function-code --function-name seattle_places \
+zip -r lambda_function.zip src Gemfile Gemfile.lock vendor credentials.json && aws lambda update-function-code --function-name seattle_places \
 --zip-file fileb://lambda_function.zip
 ```
