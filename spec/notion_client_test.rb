@@ -16,7 +16,7 @@ RSpec.describe NotionClient do
     Dotenv.load('.env.test')
   end
 
-  let(:client) { NotionClient.new }
+  let(:client) { described_class.new }
 
   describe '#coffee_shops' do
     context 'when API call is successful' do

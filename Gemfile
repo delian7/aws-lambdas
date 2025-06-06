@@ -7,6 +7,7 @@ gem "rubocop-rails-omakase", require: false
 gem "notion-ruby-client"
 gem "httparty"
 gem "byebug"
+gem "google-apis-sheets_v4"
 
 group :development do
   gem "rubocop-rspec"
