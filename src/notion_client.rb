@@ -47,6 +47,8 @@ class NotionClient
         address = address.gsub('%20', ' ')
       end
 
+      tags = result.properties.dig('Tags', 'multi_select')&.map { |tag| tag['name'] }
+
       {
         name: result.properties['Name']['title'][0]['plain_text'],
         notes: result.properties.dig('Notes', 'rich_text', 0, 'plain_text'),
@@ -54,13 +56,13 @@ class NotionClient
         created_by: created_by_id == '17eb3923-e326-493f-8b8a-b529a323c973' ? 'Lawrence Bot' : 'Delian Bot',
         address: address,
         type: 'Coffee Shop',
-        experience: 'Tried It Already',
+        experience: tags.include?('Need to Go') ? 'Never Been There' : 'Tried It Already',
         dogs_allowed: result.properties.dig('Buddy Friendly 🐶', 'checkbox'),
         rewards_program: result.properties.dig('Offers Rewards Program', 'checkbox'),
         fast_wifi: result.properties.dig('Fast WiFi', 'checkbox'),
         good_for_work: result.properties.dig('Good for Coworking', 'checkbox'),
         outlets: result.properties.dig('Outlets', 'checkbox'),
-        tags: result.properties.dig('Tags', 'multi_select').map { |tag| tag['name'] },
+        tags: tags,
         rating: result.properties.dig('Rating', 'number')
       }
     end
