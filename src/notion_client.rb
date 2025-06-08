@@ -16,6 +16,19 @@ class NotionClient
     raise NotionError, "Failed to initialize Notion client: #{e.message}"
   end
 
+  def create_recommendation(recommendation)
+    type = recommendation['type']
+    database_id = type == 'Coffee Shop' ? ENV['NOTION_COFFEE_DATABASE'] : ENV['NOTION_RESTAURANT_DATABASE']
+
+    @client.create_page(
+      parent: {
+        type: 'database_id',
+        database_id: database_id
+      },
+      properties: type == 'Coffee Shop' ? coffee_shop_properties(recommendation) : restaurant_properties(recommendation)
+    )
+  end
+
   def get_new_recommendations(existing_recommendations)
     recommendations = coffee_shops + restaurants
 
@@ -114,5 +127,69 @@ class NotionClient
     @client.database_query(
       database_id: ENV['NOTION_HIKING_DATABASE']
     )
+  end
+
+  private
+
+  def coffee_shop_properties(recommendation)
+    {
+      Name: {
+        title: [{ type: 'text', text: { content: recommendation['name'] } }]
+      },
+      Notes: {
+        rich_text: [{ type: 'text', text: { content: recommendation['notes'] } }]
+      },
+      'Maps Link': {
+        url: recommendation['maps_url']
+      },
+      'Buddy Friendly 🐶': {
+        checkbox: recommendation['dogs_allowed']
+      },
+      'Offers Rewards Program': {
+        checkbox: recommendation['rewards_program']
+      },
+      'Fast WiFi': {
+        checkbox: recommendation['fast_wifi']
+      },
+      'Good for Coworking': {
+        checkbox: recommendation['good_for_work']
+      },
+      'Outlets': {
+        checkbox: recommendation['outlets']
+      },
+      'Tags': {
+        multi_select: recommendation['tags'].map { |tag| { name: tag } }
+      },
+      'Rating': {
+        number: recommendation['rating']
+      }
+    }
+  end
+
+  def restaurant_properties(recommendation)
+    {
+      Name: {
+        title: [{ type: 'text', text: { content: recommendation['name'] } }]
+      },
+      Notes: {
+        rich_text: [{ type: 'text', text: { content: recommendation['notes'] } }]
+      },
+      'Maps Link': {
+        url: recommendation['maps_url']
+      },
+      'Our Rating': {
+        select: {
+          name: recommendation['rating']
+        }
+      },
+      'Tags': {
+        multi_select: recommendation['tags'].map { |tag| { name: tag } }
+      },
+      '$$$': {
+        select: {
+          name: recommendation['price_range']
+        }
+      }
+    }
   end
 end

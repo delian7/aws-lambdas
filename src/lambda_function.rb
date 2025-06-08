@@ -18,7 +18,7 @@ def lambda_handler(event:, context:) # rubocop:disable Lint/UnusedMethodArgument
 
   case http_method
   when 'POST'
-    send_response(notion_client.coffee_shops)
+    send_response(notion_client.create_recommendation(JSON.parse(event['body'])))
   when 'PATCH'
     existing_recommendations = google_client.get_names_of_all_rows
 
@@ -52,5 +52,3 @@ def error_response(error)
     'body' => JSON.generate({ error: error.message })
   }
 end
-
-p lambda_handler(event: { 'httpMethod' => 'PATCH' }, context: {})
