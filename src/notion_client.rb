@@ -137,6 +137,12 @@ class NotionClient
       }
     }
 
+    if recommendation['creator'] != 'undefined'
+      properties['Creator'] = {
+        rich_text: [{ type: 'text', text: { content: recommendation['creator'] } }]
+      }
+    end
+
     if recommendation['notes'] != 'undefined'
       properties['Notes'] = {
         rich_text: [{ type: 'text', text: { content: recommendation['notes'] } }]
@@ -206,6 +212,13 @@ class NotionClient
         url: recommendation['maps_url']
       }
     }
+
+    # Only add creator if it exists and is not nil
+    if recommendation['creator'] != 'undefined'
+      properties['Creator'] = {
+        rich_text: [{ type: 'text', text: { content: recommendation['creator'] } }]
+      }
+    end
 
     # Only add rating if it exists and is not nil
     if recommendation['rating'] != 'undefined'
