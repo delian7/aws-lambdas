@@ -1,4 +1,3 @@
-
 require 'logger'
 require 'notion-ruby-client'
 
@@ -132,42 +131,71 @@ class NotionClient
   private
 
   def coffee_shop_properties(recommendation)
-    {
+    properties = {
       Name: {
         title: [{ type: 'text', text: { content: recommendation['name'] } }]
-      },
-      Notes: {
-        rich_text: [{ type: 'text', text: { content: recommendation['notes'] } }]
-      },
-      'Maps Link': {
-        url: recommendation['maps_url']
-      },
-      'Buddy Friendly 🐶': {
-        checkbox: recommendation['dogs_allowed']
-      },
-      'Offers Rewards Program': {
-        checkbox: recommendation['rewards_program']
-      },
-      'Fast WiFi': {
-        checkbox: recommendation['fast_wifi']
-      },
-      'Good for Coworking': {
-        checkbox: recommendation['good_for_work']
-      },
-      'Outlets': {
-        checkbox: recommendation['outlets']
-      },
-      'Tags': {
-        multi_select: recommendation['tags'].map { |tag| { name: tag } }
-      },
-      'Rating': {
-        number: recommendation['rating']
       }
     }
+
+    if recommendation['notes'] != 'undefined'
+      properties['Notes'] = {
+        rich_text: [{ type: 'text', text: { content: recommendation['notes'] } }]
+      }
+    end
+
+    if recommendation['maps_url'] != 'undefined'
+      properties['Maps Link'] = {
+        url: recommendation['maps_url']
+      }
+    end
+
+    if recommendation['dogs_allowed'] != 'undefined'
+      properties['Buddy Friendly 🐶'] = {
+        checkbox: recommendation['dogs_allowed']
+      }
+    end
+
+    if recommendation['rewards_program'] != 'undefined'
+      properties['Offers Rewards Program'] = {
+        checkbox: recommendation['rewards_program']
+      }
+    end
+
+    if recommendation['fast_wifi'] != 'undefined'
+      properties['Fast WiFi'] = {
+        checkbox: recommendation['fast_wifi']
+      }
+    end
+
+    if recommendation['good_for_work'] != 'undefined'
+      properties['Good for Coworking'] = {
+        checkbox: recommendation['good_for_work']
+      }
+    end
+
+    if recommendation['outlets'] != 'undefined'
+      properties['Outlets'] = {
+        checkbox: recommendation['outlets']
+      }
+    end
+
+    if recommendation['tags'] != 'undefined'
+      properties['Tags'] = {
+        multi_select: recommendation['tags'].map { |tag| { name: tag } }
+      }
+    end
+
+    if recommendation['rating'] != 'undefined'
+      properties['Rating'] = {
+        number: recommendation['rating']
+      }
+    end
+
+    properties
   end
 
   def restaurant_properties(recommendation)
-    {
+    properties = {
       Name: {
         title: [{ type: 'text', text: { content: recommendation['name'] } }]
       },
@@ -176,20 +204,34 @@ class NotionClient
       },
       'Maps Link': {
         url: recommendation['maps_url']
-      },
-      'Our Rating': {
+      }
+    }
+
+    # Only add rating if it exists and is not nil
+    if recommendation['rating'] != 'undefined'
+      properties['Our Rating'] = {
         select: {
           name: recommendation['rating']
         }
-      },
-      'Tags': {
+      }
+    end
+
+    # Only add tags if they exist and are not empty
+    if recommendation['tags'] != 'undefined'
+      properties['Tags'] = {
         multi_select: recommendation['tags'].map { |tag| { name: tag } }
-      },
-      '$$$': {
+      }
+    end
+
+    # Only add price range if it exists and is not nil
+    if recommendation['price_range'] != 'undefined'
+      properties['$$$'] = {
         select: {
           name: recommendation['price_range']
         }
       }
-    }
+    end
+
+    properties
   end
 end
