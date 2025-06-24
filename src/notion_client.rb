@@ -1,5 +1,6 @@
 require 'logger'
 require 'notion-ruby-client'
+require 'uri'
 
 class NotionError < StandardError; end
 
@@ -56,7 +57,7 @@ class NotionClient
 
       if address.nil? && !maps_url.nil? && maps_url.include?('maps.apple.com')
         address = maps_url.split('address=')[1].split('&')[0]
-        address = address.gsub('%20', ' ')
+        address = URI.decode_www_form_component(address)
       end
 
       tags = result.properties.dig('Tags', 'multi_select')&.map { |tag| tag['name'] }
@@ -97,7 +98,7 @@ class NotionClient
 
       if address.nil? && !maps_url.nil? && maps_url.include?('maps.apple.com')
         address = maps_url.split('address=')[1].split('&')[0]
-        address = address.gsub('%20', ' ')
+        address = URI.decode_www_form_component(address)
       end
 
       tags = result.properties.dig('Tags', 'multi_select')&.map { |tag| tag['name'] }
